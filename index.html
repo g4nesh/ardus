@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KGP6936MM2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-KGP6936MM2');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>FLUX</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;
+      background:#000;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden
+    }
+    .container{ text-align:center; max-width:400px; padding:2rem; position:relative; z-index:2; }
+
+    .logo{
+      font-size:5rem;font-weight:100;letter-spacing:.5rem;color:#fff;margin-bottom:2rem;
+      opacity:0;animation:fadeInGlow 2s ease forwards
+    }
+    @keyframes fadeInGlow{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0);text-shadow:0 0 40px rgba(255,255,255,.3)}}
+    .tagline{
+      font-size:.9rem;font-weight:300;color:rgba(255,255,255,.6);margin-bottom:.9rem;
+      opacity:0;animation:fadeIn 2s ease .5s forwards
+    }
+    @keyframes fadeIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+
+    .signup-pill{
+      display:inline-flex;align-items:center;gap:.5rem;padding:.5rem .8rem;border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      color:rgba(255,255,255,.85);font-size:.78rem;letter-spacing:.02em;
+      opacity:0;transform:translateY(6px);animation:pillIn .8s ease .9s forwards;margin:0 auto 3rem
+    }
+    .signup-pill .dot{
+      width:8px;height:8px;border-radius:50%;
+      background:radial-gradient(circle at 30% 30%,#fff,#a7b0ff);box-shadow:0 0 8px rgba(167,176,255,.7);
+      position:relative;display:inline-block
+    }
+    .signup-pill .dot::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(167,176,255,.25);animation:pulseDot 2.4s ease-out infinite}
+    @keyframes pulseDot{0%{transform:scale(.8);opacity:.9}100%{transform:scale(1.4);opacity:0}}
+    @keyframes pillIn{to{opacity:1;transform:translateY(0)}}
+
+    .email-form{opacity:0;animation:fadeIn 2s ease 1s forwards}
+    .email-input{
+      width:100%;padding:1rem 0;border:none;border-bottom:1px solid rgba(255,255,255,.2);
+      background:transparent;color:#fff;font-size:1rem;font-weight:300;outline:none;transition:all .3s ease;margin-bottom:2rem
+    }
+    .email-input::placeholder{color:rgba(255,255,255,.4);font-weight:300}
+    .email-input:focus{border-bottom-color:rgba(255,255,255,.8);box-shadow:0 1px 0 rgba(255,255,255,.1)}
+
+    .submit-btn{
+      background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.8);
+      padding:.8rem 2rem;font-size:.9rem;font-weight:300;cursor:pointer;transition:all .4s ease;
+      backdrop-filter:blur(20px);border-radius:0;letter-spacing:.1rem
+    }
+    .submit-btn:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.6);color:#fff;transform:translateY(-1px)}
+    .submit-btn:active{transform:translateY(0)}
+
+    .status-message{margin-top:1.5rem;font-size:.8rem;font-weight:300;opacity:0;transition:all .3s ease}
+    .status-message.show{opacity:1}
+    .status-message.success{color:rgba(255,255,255,.7)}
+    .status-message.error{color:rgba(255,100,100,.8)}
+
+    .ambient-glow{
+      position:fixed;top:50%;left:50%;width:800px;height:800px;
+      background:radial-gradient(circle,rgba(255,255,255,.03) 0%,transparent 70%);
+      transform:translate(-50%,-50%);z-index:1;animation:pulse 8s ease-in-out infinite
+    }
+    @keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.5}50%{transform:translate(-50%,-50%) scale(1.1);opacity:.8}}
+
+    .particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+    .particle{position:absolute;background:rgba(255,255,255,.1);border-radius:50%;animation:float 15s linear infinite}
+    @keyframes float{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh) scale(1);opacity:0}}
+
+    @media (max-width:768px){.logo{font-size:3.5rem;letter-spacing:.3rem}.container{padding:1rem}}
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <div class="particles" id="particles"></div>
+
+  <div class="container">
+    <h1 class="logo">ardus</h1>
+    <p class="tagline">One application. Thousands of programs.</p>
+
+    <div class="signup-pill" aria-live="polite">
+      <span class="dot" aria-hidden="true"></span>
+      <span><strong id="signupCount">267</strong> already signed up</span>
+    </div>
+
+    <form class="email-form" id="emailForm">
+      <input type="email" class="email-input" id="emailInput" placeholder="Enter your email" required />
+      <div><button type="submit" class="submit-btn">NOTIFY ME</button></div>
+      <div class="status-message" id="statusMessage"></div>
+    </form>
+  </div>
+
+  <script>
+    // ===== CONFIG =====
+    // Your deployed Apps Script Web App URL (counter + append to sheet):
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycby460dLvh1b0UYnE7h_htua09sNFNsbHUiyhKvlB93Q8bLNHxH9zg9CV2bWJAGWYMOr/exec';
+    // ================
+
+    // Particles
+    (function createParticles(){
+      const box = document.getElementById('particles'); const N = 20;
+      for (let i=0;i<N;i++){
+        const p=document.createElement('div'); p.className='particle';
+        p.style.left = Math.random()*100+'%';
+        p.style.width = p.style.height = (Math.random()*3+1)+'px';
+        p.style.animationDelay = Math.random()*15+'s';
+        p.style.animationDuration = (Math.random()*10+10)+'s';
+        box.appendChild(p);
+      }
+    })();
+
+    // Cursor glow
+    document.addEventListener('mousemove', e => {
+      const glow = document.querySelector('.ambient-glow');
+      const x = (e.clientX / innerWidth) * 100;
+      const y = (e.clientY / innerHeight) * 100;
+      glow.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(255,255,255,.05) 0%, transparent 70%)`;
+    });
+
+    const countEl = document.getElementById('signupCount');
+    const emailForm = document.getElementById('emailForm');
+    const emailInput = document.getElementById('emailInput');
+    const statusEl = document.getElementById('statusMessage');
+
+    // GET live count (works with simple GET; no preflight)
+    async function fetchCount() {
+      try {
+        const res = await fetch(GAS_URL, { method: 'GET' });
+        const data = await res.json();
+        if (data && typeof data.count === 'number') {
+          countEl.textContent = data.count.toLocaleString();
+        }
+      } catch (_) {
+        // fallback seed
+        countEl.textContent = '267';
+      }
+    }
+
+    // POST signup WITHOUT CORS preflight; then refresh count
+    async function submitSignup(email) {
+      try {
+        // Using text/plain to avoid preflight; Apps Script parses JSON string fine
+        await fetch(GAS_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ email, timestamp: new Date().toISOString(), source: 'FLUX Landing Page' })
+        });
+        // Give GAS a moment to append + increment, then read back authoritative count
+        await new Promise(r => setTimeout(r, 250));
+        await fetchCount();
+        return true;
+      } catch (err) {
+        return false;
+      }
+    }
+
+    function showStatus(message, ok=true) {
+      statusEl.textContent = message;
+      statusEl.className = `status-message ${ok ? 'success' : 'error'} show`;
+      setTimeout(()=> statusEl.classList.remove('show'), 3000);
+    }
+
+    emailForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = emailInput.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showStatus('Invalid email', false); return;
+      }
+      const btn = emailForm.querySelector('button');
+      btn.disabled = true; btn.textContent = 'SENDING...';
+      const ok = await submitSignup(email);
+      if (ok) {
+        emailInput.value = '';
+        showStatus("You'll be the first to know", true);
+      } else {
+        showStatus('Something went wrong. Please try again.', false);
+      }
+      btn.disabled = false; btn.textContent = 'NOTIFY ME';
+    });
+
+    // Init
+    fetchCount();
+  </script>
+</body>
+</html>
